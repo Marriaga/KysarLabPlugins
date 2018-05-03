@@ -30,15 +30,11 @@ public class Make_PLY implements PlugIn {
 
 	// Overall Stack Properties
 	private Calibration cal;
-	private int w, h, nSlices;
-	private double maxdim;
+	private int w, h;//, nSlices;
+	private double pD,pW;
 
 	// Properties
-	private double min, max; // Threshhold min/max
-	private double sigma; // Std. dev. for Gaussian Smoothing
-	private boolean show_height; // Show heigh figure
-	private String [] interp_methods =  {"Linear","Monotone Cubic"};
-	private String theInterpMethod;
+	private String plyFileName;
 
 
 	// FUNCTIONS
@@ -47,21 +43,14 @@ public class Make_PLY implements PlugIn {
 	private boolean showDialog() {
 		// specify fields in Dialog
 		GenericDialog gd = new GenericDialog("Make PLY properties");
-		gd.addRadioButtonGroup("Interpolation Method:", interp_methods, 4, 1, interp_methods[0]);
-		gd.addNumericField("Minimum pixel threshold", 0.0,   2);
-		gd.addNumericField("Maximum pixel threshold", maxdim, 2);
-		gd.addNumericField("Standard Deviation (Smoothing)", 10.0, 2);
-		gd.addCheckbox("Show Average Height map", false);
+		gd.addStringField("Choose ply location:", "");
+		
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return false;
 
 		// get entered values
-		theInterpMethod = gd.getNextRadioButton();
-		min = (double) gd.getNextNumber();
-		max = (double) gd.getNextNumber();
-		sigma = (double) gd.getNextNumber();
-		show_height = gd.getNextBoolean();
+		plyFileName = gd.getNextString();
 
 		return true;
 	}	
@@ -69,23 +58,14 @@ public class Make_PLY implements PlugIn {
 	// Collect relevant properties of the stack
 	private void getInfo(ImagePlus implus) {
 		cal = imp.getCalibration();
-		// pD=cal.pixelDepth;
-		// pW=cal.pixelWidth;
+		pD=cal.pixelDepth;
+		pW=cal.pixelWidth;
 
 		// W,H,NCh,nSlices,NFr = imp.getDimensions()
 		int[] imp_dim = imp.getDimensions();
 		w = imp_dim[0];
 		h = imp_dim[1];
-		nSlices = imp_dim[3];
-
-		// get Automax
-		switch(imp.getType()) {
-			case ImagePlus.COLOR_256: maxdim=256.0; break;
-			case ImagePlus.COLOR_RGB: maxdim=256.0; break;
-			case ImagePlus.GRAY8: maxdim=255.0; break;
-			case ImagePlus.GRAY16: maxdim=65535.0; break;
-			case ImagePlus.GRAY32: maxdim=1.0; break;
-		}
+		//nSlices = imp_dim[3];
 	}
 
 
@@ -99,6 +79,9 @@ public class Make_PLY implements PlugIn {
 
 		// Run the dialog to get parameters and exits if cancelled
 		if (!showDialog()) {return;}
+
+
+		
 
 
 	}
