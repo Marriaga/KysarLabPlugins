@@ -61,17 +61,43 @@ public class Make_PLY implements PlugIn {
 		//nSlices = imp_dim[3];
 	}
 
-	private void makeNodes() {
+	private float[] listNodesByCoordinates(double[] z_values) {
 		double[] scale = {pix_width, pix_depth, PIX_HEIGHT};
-		double[] x_nodes = new double[num_pix_wide*num_pix_high];
-		double[] y_nodes = new double[num_pix_wide*num_pix_high];
-		for(int i = 0; i < num_pix_wide; i++) {
-			for(int j = 0; j < num_pix_high; j++){
-				x_nodes[j*num_pix_wide + i] = i;
-				y_nodes[i*num_pix_high + j] = j;
-			}
+		float[] nodes = new float[num_pix_wide*num_pix_high*z_values.length];
+
+		int num_node = 0;
+		for(int j = 0; j < num_pix_high; j++){
+			for(int i = 0; i < num_pix_wide; i++) {
+				num_node = i + j * num_pix_wide;
+				nodes[num_node*3] = (float) (i * scale[0]);
+				nodes[num_node*3 + 1] = (float) (j * scale[1]);
+				nodes[num_node*3 + 2] = (float) (z_values[num_node] * scale[2]);
+			}				
 		}
+		
+		return nodes;
 	}
+	
+	private int[] listFacesByNodeVertices() {
+		//Each "square" face has two triangular faces (4 distinct vertices shared among 2 triangles)
+		int num_square_faces = (num_pix_wide*num_pix_high - (num_pix_wide + num_pix_high - 1));
+		int num_vertices = num_faces*2*3; //6 vertices for 2 triangles
+		int[] vertices = new int[num_vertices];
+		int npw = num_pix_wide;
+		//Triangles listed counter-clockwise
+		// Example: For a 15x15 image, the first two triangles would be:
+		//			 1, 0, 15
+		//			16, 1, 15
+		for(int i = 0; i < num_square_faces; i++){
+				vertices[i*npw] = i+1;
+				vertices[i*npw + 1] = i;
+				vertices[i*npw + 2] = i+npw;
+				vertices[i*npw + 3] = i+npw+1;
+				vertices[i*npw + 4] = i+1;
+				vertices[i*npw + 5] = i+npw;
+		}
+		return vertices;
+	} 
 
 
 	// When you click the button
