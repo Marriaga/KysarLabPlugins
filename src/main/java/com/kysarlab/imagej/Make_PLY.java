@@ -75,16 +75,15 @@ public class Make_PLY implements PlugIn {
 		float[] nodes = new float[num_pix_wide*num_pix_high*z_values.length];
 
 		int num_node = 0;
-		for(int k = 0; k < z_values.length; k++){
-			for(int j = 0; j < num_pix_high; j++){
-				for(int i = 0; i < num_pix_wide; i++) {
-					nodes[num_node*3] = (float) (i * scale[0]);
-					nodes[num_node*3 + 1] = (float) (j * scale[1]);
-					nodes[num_node*3 + 2] = (float) (z_values[k] * scale[2]);
-					num_node++;
-				}				
-			}
+		for(int j = 0; j < num_pix_high; j++){
+			for(int i = 0; i < num_pix_wide; i++) {
+				num_node = i + j * num_pix_wide;
+				nodes[num_node*3] = (float) (i * scale[0]);
+				nodes[num_node*3 + 1] = (float) (j * scale[1]);
+				nodes[num_node*3 + 2] = (float) (z_values[num_node] * scale[2]);
+			}				
 		}
+		
 		return nodes;
 	}
 	
