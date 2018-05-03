@@ -70,16 +70,22 @@ public class Make_PLY implements PlugIn {
 		//nSlices = imp_dim[3];
 	}
 
-	private void makeNodes() {
+	private float[] makeNodes(double[] z_values) {
 		double[] scale = {pix_width, pix_depth, PIX_HEIGHT};
-		double[] x_nodes = new double[num_pix_wide*num_pix_high];
-		double[] y_nodes = new double[num_pix_wide*num_pix_high];
-		for(int i = 0; i < num_pix_wide; i++) {
+		float[] nodes = new float[num_pix_wide*num_pix_high*z_values.length];
+
+		int num_node = 0;
+		for(int k = 0; k < z_values.length; k++){
 			for(int j = 0; j < num_pix_high; j++){
-				x_nodes[j*num_pix_wide + i] = i;
-				y_nodes[i*num_pix_high + j] = j;
+				for(int i = 0; i < num_pix_wide; i++) {
+					nodes[num_node*3] = (float) (i * scale[0]);
+					nodes[num_node*3 + 1] = (float) (j * scale[1]);
+					nodes[num_node*3 + 2] = (float) (z_values[k] * scale[2]);
+					num_node++;
+				}				
 			}
 		}
+		return nodes;
 	}
 
 
