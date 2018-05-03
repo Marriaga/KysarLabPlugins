@@ -18,6 +18,7 @@ import ij.gui.GenericDialog;
 import ij.io.SaveDialog;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
 
 public class Make_PLY implements PlugIn {
 
@@ -79,6 +80,11 @@ public class Make_PLY implements PlugIn {
 
 		// Run the dialog to get parameters and exits if cancelled
 		if (!showDialog()) {return;}
+
+		// Get Image Pixels
+		ImageProcessor img_p = imp.getProcessor();
+		float[] img_pix = (float[]) img_p.getPixels();
+		
 
 
 		
