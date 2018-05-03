@@ -87,11 +87,11 @@ public class Make_PLY implements PlugIn {
 		return nodes;
 	}
 	
-	private float[] listFacesByNodeVertices() {
+	private int[] listFacesByNodeVertices() {
 		//Each "square" face has two triangular faces (4 distinct vertices shared among 2 triangles)
 		int num_square_faces = (num_pix_wide*num_pix_high - (num_pix_wide + num_pix_high - 1));
 		int num_vertices = num_faces*2*3; //6 vertices for 2 triangles
-		float[] vertices = new float[num_vertices];
+		int[] vertices = new int[num_vertices];
 		int npw = num_pix_wide;
 		//Triangles listed counter-clockwise
 		// Example: For a 15x15 image, the first two triangles would be:
