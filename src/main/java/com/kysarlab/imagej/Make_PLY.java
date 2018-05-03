@@ -8,6 +8,7 @@
 
 package com.kysarlab.imagej;
 
+import java.awt.FileDialog;
 import java.io.File;
 
 import ij.IJ;
@@ -15,7 +16,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.GenericDialog;
-import ij.io.SaveDialog;
+import ij.io.FileInfo;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
@@ -35,27 +36,17 @@ public class Make_PLY implements PlugIn {
 	// Properties
 	private String plyFileName;
 
-
 	// FUNCTIONS
 
+	// To set the final location of the ply file
+	private String getFileLocation(String defaultDir, String defaultName) {
+		FileDialog fd = new FileDialog(IJ.getInstance(), "Set ply file name and location ...", FileDialog.SAVE);
+		fd.setFile(defaultName);
+		fd.setDirectory(defaultDir);
+		fd.show();
 
-
-
-	// Shows dialog
-	private boolean showDialog() {
-		// specify fields in Dialog
-		GenericDialog gd = new GenericDialog("Make PLY properties");
-		gd.addStringField("Choose ply location:", "");
-
-		gd.showDialog();
-		if (gd.wasCanceled())
-			return false;
-
-		// get entered values
-		plyFileName = gd.getNextString();
-
-		return true;
-	}	
+		return fd.getDirectory()+fd.getFile();
+	}
 
 	// Collect relevant properties of the stack
 	private void getInfo(ImagePlus implus) {
@@ -117,17 +108,13 @@ public class Make_PLY implements PlugIn {
 		// Get img info
 		getInfo(imp);
 
-		// Run the dialog to get parameters and exits if cancelled
-		if (!showDialog()) {return;}
-
 		// Get Image Pixels
 		ImageProcessor img_p = imp.getProcessor();
 		float[] img_pix = (float[]) img_p.getPixels();
 		
-
-
-		
-
+		// Select Save Location
+		FileInfo fiOriginal = imp.getOriginalFileInfo();
+		plyFileName = getFileLocation(fiOriginal.directory, imp.getShortTitle()+".ply");
 
 	}
 
