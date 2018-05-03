@@ -30,8 +30,9 @@ public class Make_PLY implements PlugIn {
 
 	// Overall Stack Properties
 	private Calibration cal;
-	private int w, h;//, nSlices;
-	private double pD,pW;
+	private int num_pix_wide, num_pix_high;//, nSlices;
+	private double pix_depth, pix_width;
+	private double PIX_HEIGHT = 1.0;
 
 	// Properties
 	private String plyFileName;
@@ -58,14 +59,26 @@ public class Make_PLY implements PlugIn {
 	// Collect relevant properties of the stack
 	private void getInfo(ImagePlus implus) {
 		cal = imp.getCalibration();
-		pD=cal.pixelDepth;
-		pW=cal.pixelWidth;
+		pix_depth=cal.pixelDepth;
+		pix_width=cal.pixelWidth;
 
 		// W,H,NCh,nSlices,NFr = imp.getDimensions()
 		int[] imp_dim = imp.getDimensions();
-		w = imp_dim[0];
-		h = imp_dim[1];
+		num_pix_wide = imp_dim[0];
+		num_pix_high = imp_dim[1];
 		//nSlices = imp_dim[3];
+	}
+
+	private void makeNodes() {
+		double[] scale = {pix_width, pix_depth, PIX_HEIGHT};
+		double[] x_nodes = new double[num_pix_wide*num_pix_high];
+		double[] y_nodes = new double[num_pix_wide*num_pix_high];
+		for(int i = 0; i < num_pix_wide; i++) {
+			for(int j = 0; j < num_pix_high; j++){
+				x_nodes[j*num_pix_wide + i] = i;
+				y_nodes[i*num_pix_high + j] = j;
+			}
+		}
 	}
 
 
@@ -88,7 +101,7 @@ public class Make_PLY implements PlugIn {
 
 	public void showAbout() {
 		IJ.showMessage("Make PLY",
-			"Makes a ply file based on average heigh image."
+			"Makes a ply file based on average height image."
 		);
 	}
 
