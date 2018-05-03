@@ -8,19 +8,16 @@
 
 package com.kysarlab.imagej;
 
-import java.util.Arrays;
+import java.io.File;
 
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.WindowManager;
+import ij.gui.GenericDialog;
+import ij.io.SaveDialog;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
-import ij.process.ImageConverter;
-import ij.gui.GenericDialog;
 
 public class Make_PLY implements PlugIn {
 
@@ -39,12 +36,15 @@ public class Make_PLY implements PlugIn {
 
 	// FUNCTIONS
 
+
+
+
 	// Shows dialog
 	private boolean showDialog() {
 		// specify fields in Dialog
 		GenericDialog gd = new GenericDialog("Make PLY properties");
 		gd.addStringField("Choose ply location:", "");
-		
+
 		gd.showDialog();
 		if (gd.wasCanceled())
 			return false;
@@ -110,8 +110,9 @@ public class Make_PLY implements PlugIn {
 		// start ImageJ
 		new ImageJ();
 
-		// open the Clown sample
-		ImagePlus image = IJ.openImage("http://imagej.net/images/flybrain.zip");
+		// open sample
+		File file = new File(clazz.getResource("/avg-height-example.tif").getFile());
+		ImagePlus image = IJ.openImage(file.getAbsolutePath());
 
 		image.show();
 
