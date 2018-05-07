@@ -65,7 +65,7 @@ public class Make_PLY implements PlugIn {
 	}
 
 	private float[] listNodesByCoordinates(float[] z_values) {
-		double[] scale = {pix_width, pix_width, pix_depth};
+		double[] scale = {pix_width, pix_width, pix_depth}; //TODO: Fix for pixels that are not square
 		float[] nodes = new float[num_pix_wide*num_pix_high*3];
 
 		int num_node = 0;
