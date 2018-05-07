@@ -9,7 +9,10 @@
 package com.kysarlab.imagej;
 
 import java.awt.FileDialog;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import ij.IJ;
 import ij.ImageJ;
@@ -61,16 +64,16 @@ public class Make_PLY implements PlugIn {
 		//nSlices = imp_dim[3];
 	}
 
-	private float[] listNodesByCoordinates(double[] z_values) {
-		double[] scale = {pix_width, pix_depth, PIX_HEIGHT};
-		float[] nodes = new float[num_pix_wide*num_pix_high*z_values.length];
+	private float[] listNodesByCoordinates(float[] z_values) {
+		double[] scale = {pix_width, pix_width, pix_depth};
+		float[] nodes = new float[num_pix_wide*num_pix_high*3];
 
 		int num_node = 0;
 		for(int j = 0; j < num_pix_high; j++){
 			for(int i = 0; i < num_pix_wide; i++) {
 				num_node = i + j * num_pix_wide;
 				nodes[num_node*3] = (float) (i * scale[0]);
-				nodes[num_node*3 + 1] = (float) (j * scale[1]);
+				nodes[num_node*3 + 1] = (float) ((num_pix_high-j-1) * scale[1]);
 				nodes[num_node*3 + 2] = (float) (z_values[num_node] * scale[2]);
 			}				
 		}
@@ -88,16 +91,51 @@ public class Make_PLY implements PlugIn {
 		// Example: For a 15x15 image, the first two triangles would be:
 		//			 1, 0, 15
 		//			16, 1, 15
-		for(int i = 0; i < num_square_faces; i++){
-				vertices[i*npw] = i+1;
-				vertices[i*npw + 1] = i;
-				vertices[i*npw + 2] = i+npw;
-				vertices[i*npw + 3] = i+npw+1;
-				vertices[i*npw + 4] = i+1;
-				vertices[i*npw + 5] = i+npw;
+		int idx = 0;
+		for(int j = 0; j < num_pix_high; j++){
+			for(int i = 0; i < num_pix_wide; i++){
+				if(i != num_pix_wide-1 && j != num_pix_high-1) {
+					idx = j*(npw-1)+i;
+					vertices[idx*6] = idx+1+j;
+					vertices[idx*6 + 1] = idx+j;
+					vertices[idx*6 + 2] = idx+npw+j;
+					vertices[idx*6 + 3] = idx+npw+1+j;
+					vertices[idx*6 + 4] = idx+1+j;
+					vertices[idx*6 + 5] = idx+npw+j;
+				}
+			}
 		}
+		
 		return vertices;
 	} 
+
+	public void writePLYToFile(String fileName, float[]nodes, int[]faces) throws IOException {
+		String str = "ply\nformat ascii 1.0\ncomment VCGLIB generated\n";
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+		writer.write(str);
+		str = "element vertex "+Integer.toString(num_pix_high*num_pix_wide)+ "\n";
+		writer.write(str);
+		str = "property float x\nproperty float y\nproperty float z\n";
+		writer.write(str);
+		str = "element face "+Integer.toString((num_pix_high*num_pix_wide-(num_pix_high+num_pix_wide-1))*2)+ "\n";
+		writer.write(str);
+		str = "property list uchar int vertex_indices\nend_header\n";
+		writer.write(str);
+
+		//write nodes
+		for(int n = 0; n < nodes.length/3; n++){
+			str = Float.toString(nodes[n*3]) + " " + Float.toString(nodes[n*3+1]) + " " + Float.toString(nodes[n*3+2]) + "\n";
+			writer.write(str);
+		}
+
+		//write faces
+		for(int f = 0; f < faces.length/3; f++){
+			str = "3 "+Integer.toString(faces[f*3]) + " " + Integer.toString(faces[f*3+1]) + " " + Integer.toString(faces[f*3+2]) + "\n";
+			writer.write(str);
+		}
+
+		writer.close();
+	}
 
 
 	// When you click the button
@@ -115,6 +153,32 @@ public class Make_PLY implements PlugIn {
 		// Select Save Location
 		FileInfo fiOriginal = imp.getOriginalFileInfo();
 		plyFileName = getFileLocation(fiOriginal.directory, imp.getShortTitle()+".ply");
+
+		//Get Nodes
+		float[] nodes;
+		nodes = listNodesByCoordinates(img_pix);
+
+		//Get faces
+		int[] faces;
+		faces = listFacesByNodeVertices();
+
+		//Write PLY 
+		System.out.println(plyFileName);
+		try {
+			writePLYToFile(plyFileName, nodes, faces);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.err.println("Caught IOException: " + e.getMessage());
+		}
+
+		// //Write nodes and vertices into PLY file
+		// try {
+		// 	writeNodesAndVerticesToFile(plyFileName);
+		// } catch (IOException e) {
+		// 	// TODO Auto-generated catch block
+		// 	e.printStackTrace();
+		// }
 
 	}
 
