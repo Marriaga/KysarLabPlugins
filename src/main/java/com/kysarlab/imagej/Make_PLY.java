@@ -18,7 +18,6 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-import ij.gui.GenericDialog;
 import ij.io.FileInfo;
 import ij.measure.Calibration;
 import ij.plugin.PlugIn;
@@ -34,7 +33,7 @@ public class Make_PLY implements PlugIn {
 	private Calibration cal;
 	private int num_pix_wide, num_pix_high;//, nSlices;
 	private double pix_depth, pix_width;
-	private double PIX_HEIGHT = 1.0;
+	// private double PIX_HEIGHT = 1.0;
 
 	// Properties
 	private String plyFileName;
