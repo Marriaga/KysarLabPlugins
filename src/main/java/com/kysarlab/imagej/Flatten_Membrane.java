@@ -8,6 +8,7 @@
 
 package com.kysarlab.imagej;
 
+import java.io.File;
 import java.util.Arrays;
 
 import ij.IJ;
@@ -343,9 +344,9 @@ public class Flatten_Membrane implements PlugIn {
 		// start ImageJ
 		new ImageJ();
 
-		// open the Clown sample
-		// ImagePlus image = IJ.openImage("http://imagej.net/images/flybrain.zip");
-		ImagePlus image = IJ.openImage("C:\\Users\\Miguel\\Desktop\\20180308L_10X.tif");
+		// open sample
+		File file = new File(clazz.getResource("/TestFlattening.tif").getFile());
+		ImagePlus image = IJ.openImage(file.getAbsolutePath());
 
 		image.show();
 

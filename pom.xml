@@ -14,7 +14,7 @@
 
 	<groupId>com.kysarlab</groupId>
 	<artifactId>KysarLab_Plugins</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<name>Kysar Lab Plugins</name>
 	<description>KysarLab Plugins for ImageJ.</description>
